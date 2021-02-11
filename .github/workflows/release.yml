@@ -1,18 +1,20 @@
-name: deploy to lambda
-on: [push]
+name: deploy-py-lambda
+on:
+  push:
+    branches:
+      - master
 jobs:
-
-  deploy_source:
-    name: deploy lambda from source
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: checkout source code
-        uses: actions/checkout@v2
-      - name: default deploy
-        uses: appleboy/lambda-action@master
-        with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: ${{ secrets.AWS_REGION }}
-          function_name: cd-deployin
-          source: lambda_function.py
+    - uses: actions/checkout@master
+    - name: Deploy code to Lambda
+      uses: mariamrf/py-lambda-action@v1.0.0
+      with:
+        lambda_layer_arn: 'arn:aws:lambda:ap-south-1:726789220940:function:cd-deployin'
+        lambda_function_name: 'cd-deployin'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'ap-south-1'
